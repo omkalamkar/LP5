@@ -1,0 +1,161 @@
+Of course! I'll explain your code **line by line** in **very simple language**:
+
+---
+
+```python
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+```
+👉 Importing libraries:  
+- **numpy** (for numbers),
+- **tensorflow** and **keras** (for deep learning),
+- **layers** (to build neural network).
+
+---
+
+```python
+from tensorflow.keras.datasets import imdb
+```
+👉 Load the **IMDB movie review dataset** (reviews + sentiments).
+
+---
+
+```python
+num_words = 10000
+(X_train, y_train), (X_test, y_test) = imdb.load_data(num_words=num_words)
+```
+👉 Keep only the **10,000 most common words**.  
+👉 Load data:  
+- `X_train`, `y_train`: training data (reviews + labels)  
+- `X_test`, `y_test`: testing data (reviews + labels)
+
+---
+
+```python
+print(f"Training Data Shape: {X_train.shape}")
+print(f"Testing Data Shape: {X_test.shape}")
+```
+👉 Print the size of training and testing data.
+
+---
+
+```python
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+```
+👉 Import a tool to **make reviews same size** (padding).
+
+---
+
+```python
+maxlen = 200  # maximum review length
+X_train_padded = pad_sequences(X_train, maxlen=maxlen)
+X_test_padded = pad_sequences(X_test, maxlen=maxlen)
+```
+👉 **Set max review length** = 200 words.  
+👉 **Pad** reviews shorter than 200 with zeros at the beginning.
+
+---
+
+```python
+model = keras.Sequential([
+    layers.Embedding(input_dim=num_words, output_dim=32, input_length=maxlen),
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(1, activation='sigmoid')
+])
+```
+👉 **Build the neural network**:  
+- **Embedding layer**: Turns word numbers into word vectors (32 features each).
+- **Flatten layer**: Make it one long line of numbers.
+- **Dense 64 layer**: Fully connected layer with **ReLU** activation (to learn patterns).
+- **Dense 1 layer**: Output one value (positive or negative) using **Sigmoid** (binary classification).
+
+---
+
+```python
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+```
+👉 **Prepare the model**:  
+- Optimizer = **adam** (smart way to update weights)  
+- Loss = **binary_crossentropy** (for yes/no problems)  
+- Measure performance with **accuracy**.
+
+---
+
+```python
+history = model.fit(X_train_padded, y_train, epochs=10, batch_size=32, validation_split=0.2, verbose=1)
+```
+👉 **Train the model**:  
+- For **10 times** (epochs),
+- **32 reviews at a time** (batch size),
+- Use **80% data for training** and **20% for validation**.
+
+---
+
+```python
+test_loss, test_accuracy = model.evaluate(X_test_padded, y_test, verbose=2)
+```
+👉 **Check how good** the model is on the test data.
+
+---
+
+```python
+print(f"Test Loss: {test_loss:.2f}")
+print(f"Test Accuracy: {test_accuracy:.2f}")
+```
+👉 Print the **loss** and **accuracy** on test data.
+
+---
+
+```python
+import matplotlib.pyplot as plt
+```
+👉 Import **matplotlib** for making graphs.
+
+---
+
+```python
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('Model Accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.show()
+```
+👉 **Draw a graph** showing how training and validation accuracy changed during training.
+
+---
+
+```python
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model Loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper right')
+plt.show()
+```
+👉 **Draw another graph** showing how training and validation loss changed during training.
+
+---
+
+```python
+predictions = model.predict(X_test_padded[:5])
+```
+👉 Predict the sentiment (positive/negative) of the **first 5 reviews** from test data.
+
+---
+
+```python
+for i, pred in enumerate(predictions):
+    print(f"Review {i+1}: Predicted Sentiment: {'Positive' if pred[0] > 0.5 else 'Negative'} | Actual Sentiment: {'Positive' if y_test[i]==1 else 'Negative'}")
+```
+👉 Show **model prediction** vs **real sentiment** for the first 5 reviews.
+
+---
+
+Would you also like a **simple visual diagram** of the model? 🚀  
+(It'll make it even easier to understand!)
